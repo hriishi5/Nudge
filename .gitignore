@@ -1,0 +1,92 @@
+# ====================================================================
+# Nudge: Git Ignore Configuration
+# Prevents leaking credentials, secrets, PII, and build artifacts
+# ====================================================================
+
+# 1. Environment & Secret Variables (CRITICAL)
+# Ignore all .env files across root, client, and server
+.env
+.env.*
+*.env
+**/.env
+**/.env.*
+!.env.example
+!**/.env.example
+
+# Private Keys, Certificates, and Tokens
+*.pem
+*.key
+*.cert
+*.crt
+*.pfx
+*.p12
+*.pkcs12
+*service-account*.json
+*credentials*.json
+*secret*.json
+*.token
+
+# 2. Dependencies
+node_modules/
+**/node_modules/
+.pnp
+.pnp.js
+
+# 3. Production Build Artifacts
+dist/
+**/dist/
+build/
+**/build/
+out/
+.next/
+.turbo/
+
+# 4. Logs & Debug Traces
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# 5. Local Mock File Storage & Uploaded Invoices/Certificates
+# Ensures user-uploaded vendor invoices & tax certificates never leak to git
+uploads/
+**/uploads/
+local_mock_storage/
+**/local_mock_storage/
+temp/
+tmp/
+
+# 6. Test & Coverage Reports
+coverage/
+**/coverage/
+.nyc_output/
+*.lcov
+
+# 7. Operating System & Editor Metadata
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+[Dd]esktop.ini
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# 8. Supabase Local Configuration & Temp Data
+.supabase/
+**/supabase/.branches
+**/supabase/.temp

@@ -1,0 +1,60 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    background-color: #0F1729;
+    color: #F1F5F9;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Document and numeric serif formatting */
+  .font-statutory {
+    font-family: 'Lora', Georgia, serif;
+    font-variant-numeric: tabular-nums lining-nums;
+  }
+}
+
+/* Institutional Hairline Border Utility */
+.border-hairline {
+  border: 1px solid #263B5D;
+}
+
+.border-hairline-t {
+  border-top: 1px solid #263B5D;
+}
+
+.border-hairline-b {
+  border-bottom: 1px solid #263B5D;
+}
+
+.border-hairline-r {
+  border-right: 1px solid #263B5D;
+}
+
+/* Paper Register Surface */
+.paper-register {
+  background-color: #F7F5F0;
+  color: #0F1729;
+  border: 1px solid #E2DDD2;
+}
+
+/* Custom Scrollbars */
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+::-webkit-scrollbar-track {
+  background: #0B111E;
+}
+::-webkit-scrollbar-thumb {
+  background: #263B5D;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #344E77;
+}

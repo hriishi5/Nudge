@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0f172a" />
+      <stop offset="100%" stop-color="#020617" />
+    </linearGradient>
+    <linearGradient id="shieldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#6366f1" />
+      <stop offset="50%" stop-color="#4f46e5" />
+      <stop offset="100%" stop-color="#06b6d4" />
+    </linearGradient>
+    <linearGradient id="nGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff" />
+      <stop offset="100%" stop-color="#e0e7ff" />
+    </linearGradient>
+  </defs>
+
+  <!-- Base rounded container -->
+  <rect width="64" height="64" rx="16" fill="url(#bgGrad)" stroke="#312e81" stroke-width="1.5" />
+
+  <!-- Geometric Shield Outer -->
+  <path d="M32 10 L48 17 C48 31 41 44 32 50 C23 44 16 31 16 17 Z" 
+        fill="url(#shieldGrad)" 
+        opacity="0.95" />
+
+  <!-- Shield Inner Core Accent -->
+  <path d="M32 14 L44 20 C44 31 38 41 32 46 C26 41 20 31 20 20 Z" 
+        fill="#0b0f19" 
+        opacity="0.88" />
+
+  <!-- Modern Stylized 'N' Monogram -->
+  <path d="M26 36 V24 L38 36 V24" 
+        stroke="url(#nGrad)" 
+        stroke-width="3" 
+        stroke-linecap="round" 
+        stroke-linejoin="round" />
+
+  <!-- Radar / Active Compliance Beacon Pulse -->
+  <circle cx="39" cy="23" r="2.5" fill="#10b981" />
+</svg>
