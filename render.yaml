@@ -1,0 +1,47 @@
+services:
+  # -------------------------------------------------------------
+  # Backend API Web Service
+  # -------------------------------------------------------------
+  - type: web
+    name: nudge-api
+    runtime: node
+    plan: free
+    region: oregon
+    rootDir: server
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_ANON_KEY
+        sync: false
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: SCHEDULED_JOB_SECRET
+        generateValue: true
+      - key: CORS_ORIGIN
+        value: '*'
+
+  # -------------------------------------------------------------
+  # Frontend Static Site
+  # -------------------------------------------------------------
+  - type: web
+    name: nudge-web
+    runtime: static
+    plan: free
+    region: oregon
+    rootDir: client
+    buildCommand: npm install && npm run build
+    staticPublishPath: ./dist
+    envVars:
+      - key: VITE_SUPABASE_URL
+        sync: false
+      - key: VITE_SUPABASE_ANON_KEY
+        sync: false
+      - key: VITE_API_BASE_URL
+        sync: false

@@ -191,6 +191,10 @@ npm run dev
 ```
 Access the client dashboard at `http://localhost:5173`.
 
+### Step 4: Production Cloud Deployment (Render)
+For instructions on deploying the full stack to Render (Free Tier) with automated SSL, CDN caching, and 1-click Render Blueprints, see:
+👉 **[Render Deployment Guide (RENDER_DEPLOYMENT.md)](RENDER_DEPLOYMENT.md)**
+
 ---
 
 ## 9. Automated Test Suites

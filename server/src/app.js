@@ -27,9 +27,14 @@ app.use(helmet({
   crossOriginResourcePolicy: { policy: "cross-origin" }
 }));
 
-// Security: Permissive for local development, strict for production
-const allowedOrigins = [
-  process.env.CORS_ORIGIN || 'http://localhost:5173',
+// Security: Permissive for local development, flexible and secure for production
+const configuredOrigins = (process.env.CORS_ORIGIN || '')
+  .split(',')
+  .map(o => o.trim().replace(/\/+$/, ''))
+  .filter(Boolean);
+
+const defaultOrigins = [
+  'http://localhost:5173',
   'http://localhost:3000',
   'http://localhost:5174',
   'http://localhost:5175',
@@ -38,14 +43,25 @@ const allowedOrigins = [
   'http://127.0.0.1:5175'
 ];
 
+const allowedOrigins = [...new Set([...configuredOrigins, ...defaultOrigins])];
+
 app.use(cors({
   origin: (origin, callback) => {
     // Allow requests with no origin (e.g. mobile apps, curl, server-to-server)
     if (!origin) return callback(null, true);
     
-    // Allow any localhost/127.0.0.1 port in non-production environments
-    const isLocalhost = /^http:\/\/(localhost|127\.0\.0\.1|0\.0\.0\.0)(:\d+)?$/.test(origin);
-    if (isLocalhost || allowedOrigins.includes(origin) || process.env.NODE_ENV !== 'production') {
+    const normalized = origin.trim().replace(/\/+$/, '');
+    const isLocalhost = /^http:\/\/(localhost|127\.0\.0\.1|0\.0\.0\.0)(:\d+)?$/.test(normalized);
+    const isRenderDomain = normalized.endsWith('.onrender.com');
+    const isWildcard = process.env.CORS_ORIGIN === '*';
+
+    if (
+      isLocalhost ||
+      isRenderDomain ||
+      isWildcard ||
+      allowedOrigins.includes(normalized) ||
+      process.env.NODE_ENV !== 'production'
+    ) {
       callback(null, true);
     } else {
       callback(new Error(`CORS blocked for origin: ${origin}`));
