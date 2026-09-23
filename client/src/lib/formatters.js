@@ -20,18 +20,23 @@ export function formatINR(amount) {
  * @returns {string}
  */
 export function formatDate(dateStr) {
-  if (!dateStr) return '—';
+  if (!dateStr || dateStr === '—') return '—';
   try {
-    const parts = dateStr.split('-');
+    const cleanStr = String(dateStr).trim().slice(0, 10);
+    const parts = cleanStr.split('-');
     if (parts.length === 3) {
-      const [y, m, d] = parts.map(Number);
-      const date = new Date(Date.UTC(y, m - 1, d));
-      return date.toLocaleDateString('en-IN', {
-        day: 'numeric',
-        month: 'short',
-        year: 'numeric',
-        timeZone: 'UTC'
-      });
+      const y = parseInt(parts[0], 10);
+      const m = parseInt(parts[1], 10);
+      const d = parseInt(parts[2], 10);
+      if (!isNaN(y) && !isNaN(m) && !isNaN(d)) {
+        const date = new Date(Date.UTC(y, m - 1, d));
+        return date.toLocaleDateString('en-IN', {
+          day: 'numeric',
+          month: 'short',
+          year: 'numeric',
+          timeZone: 'UTC'
+        });
+      }
     }
     const d = new Date(dateStr);
     return isNaN(d.getTime()) ? dateStr : d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });

@@ -16,10 +16,21 @@
  */
 export function parseDateUTC(dateStr) {
   if (!dateStr) return null;
-  const parts = dateStr.split('-');
-  if (parts.length !== 3) return null;
-  const [y, m, d] = parts.map(Number);
-  return new Date(Date.UTC(y, m - 1, d));
+  if (dateStr instanceof Date) {
+    return isNaN(dateStr.getTime()) ? null : dateStr;
+  }
+  const cleanStr = String(dateStr).trim().slice(0, 10);
+  const parts = cleanStr.split('-');
+  if (parts.length === 3) {
+    const y = parseInt(parts[0], 10);
+    const m = parseInt(parts[1], 10);
+    const d = parseInt(parts[2], 10);
+    if (!isNaN(y) && !isNaN(m) && !isNaN(d)) {
+      return new Date(Date.UTC(y, m - 1, d));
+    }
+  }
+  const fallback = new Date(dateStr);
+  return isNaN(fallback.getTime()) ? null : fallback;
 }
 
 /**

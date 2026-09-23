@@ -4,7 +4,7 @@
 // under the Income Tax Act, 1961 and Section 22 of the MSMED Act, 2006.
 // ====================================================================
 
-import { formatDateUTC, evaluateComplianceStatus, isSection43BhApplicable } from '../services/compliance.service.js';
+import { formatDateUTC, evaluateComplianceStatus, isSection43BhApplicable, computeStatutoryDeadline } from '../services/compliance.service.js';
 
 export async function getForm3CDReport(req, res) {
   try {
@@ -38,9 +38,30 @@ export async function getForm3CDReport(req, res) {
     let total_disallowance_exposure = 0;
 
     const lineItems = msmeInvoices.map(inv => {
+      const rawAcceptance = inv.acceptance_date ? String(inv.acceptance_date).trim().slice(0, 10) : '';
+      let deadline = inv.computed_deadline ? String(inv.computed_deadline).trim().slice(0, 10) : '';
+
+      // If deadline is missing but acceptance date is present, calculate deterministically
+      if (!deadline && rawAcceptance) {
+        try {
+          const comp = computeStatutoryDeadline({
+            acceptance_date: rawAcceptance,
+            agreement_basis: inv.agreement_basis || 'no_agreement',
+            agreement_days: inv.agreement_days
+          });
+          deadline = comp.computed_deadline || '';
+        } catch (e) {
+          deadline = '';
+        }
+      }
+
+      const rawPayment = inv.payment_date && inv.payment_date !== 'Unpaid' 
+        ? String(inv.payment_date).trim().slice(0, 10) 
+        : null;
+
       const evalRes = evaluateComplianceStatus({
-        computed_deadline: inv.computed_deadline,
-        payment_date: inv.payment_date,
+        computed_deadline: deadline,
+        payment_date: rawPayment,
         as_of_date: today
       });
 
@@ -52,7 +73,7 @@ export async function getForm3CDReport(req, res) {
       const isBreached = evalRes.status === 'breached';
       const isPaidLate = evalRes.status === 'paid_late';
 
-      if (!inv.payment_date) {
+      if (!rawPayment) {
         clause22_a_principal_unpaid += principal;
         clause22_b_interest_due += interestAmount;
         clause22_d_interest_accrued_unpaid += interestAmount;
@@ -72,11 +93,11 @@ export async function getForm3CDReport(req, res) {
         udyam_registration_number: inv.vendors?.udyam_registration_number || 'Pending Verification',
         udyam_category: inv.vendors?.udyam_category || 'unknown',
         invoice_number: inv.invoice_number,
-        acceptance_date: inv.acceptance_date,
+        acceptance_date: rawAcceptance,
         agreement_basis: inv.agreement_basis,
         statutory_window_days: inv.agreement_basis === 'written_agreement' ? Math.min(inv.agreement_days || 45, 45) : 15,
-        computed_deadline: inv.computed_deadline,
-        payment_date: inv.payment_date || 'Unpaid',
+        computed_deadline: deadline,
+        payment_date: rawPayment || 'Unpaid',
         principal_amount: principal,
         status: evalRes.status,
         days_overdue: daysOverdue,
@@ -102,9 +123,15 @@ export async function getForm3CDReport(req, res) {
     if (format === 'csv') {
       let csv = 'Vendor Name,Udyam Number,Category,Invoice No,Acceptance Date,Statutory Days,Deadline,Payment Date,Principal (INR),Status,Days Overdue,MSMED Interest (INR),43B(h) Disallowance\n';
       for (const item of lineItems) {
-        csv += `"${item.vendor_name}","${item.udyam_registration_number}","${item.udyam_category}","${item.invoice_number}","${item.acceptance_date}",${item.statutory_window_days},"${item.computed_deadline}","${item.payment_date}",${item.principal_amount},"${item.status}",${item.days_overdue},${item.accrued_msmed_interest},${item.section_43bh_disallowance_inr}\n`;
+        const accDate = item.acceptance_date || '—';
+        const dline = item.computed_deadline || '—';
+        const pdate = item.payment_date || 'Unpaid';
+        csv += `"${item.vendor_name}","${item.udyam_registration_number}","${item.udyam_category}","${item.invoice_number}","${accDate}",${item.statutory_window_days},"${dline}","${pdate}",${item.principal_amount},"${item.status}",${item.days_overdue},${item.accrued_msmed_interest},${item.section_43bh_disallowance_inr}\n`;
       }
-      res.setHeader('Content-Type', 'text/csv');
+      res.setHeader('Content-Type', 'text/csv; charset=utf-8');
+      res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+      res.setHeader('Pragma', 'no-cache');
+      res.setHeader('Expires', '0');
       res.setHeader('Content-Disposition', 'attachment; filename="form_3cd_clause_22.csv"');
       return res.send(csv);
     }

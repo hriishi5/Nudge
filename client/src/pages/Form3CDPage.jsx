@@ -8,7 +8,8 @@ import {
   Printer,
   ShieldCheck,
   AlertTriangle,
-  FileSpreadsheet
+  FileSpreadsheet,
+  RefreshCw
 } from 'lucide-react';
 
 export default function Form3CDPage() {
@@ -38,11 +39,23 @@ export default function Form3CDPage() {
   }, []);
 
   const [exporting, setExporting] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
+
+  const handleRefresh = async () => {
+    setRefreshing(true);
+    await fetchReport();
+    setRefreshing(false);
+    addToast({
+      title: 'Report Refreshed',
+      message: 'Form 3CD Clause 22 disclosures synchronized with latest payables.',
+      type: 'info'
+    });
+  };
 
   const handleDownloadCSV = async () => {
     setExporting(true);
     try {
-      const res = await apiClient.get('/reports/form-3cd?format=csv', {
+      const res = await apiClient.get(`/reports/form-3cd?format=csv&_t=${Date.now()}`, {
         responseType: 'blob'
       });
       const blob = new Blob([res.data], { type: 'text/csv;charset=utf-8;' });
@@ -61,6 +74,38 @@ export default function Form3CDPage() {
         type: 'success'
       });
     } catch (err) {
+      // Fallback: Generate directly from active table state
+      if (lineItems && lineItems.length > 0) {
+        try {
+          let csv = 'Vendor Name,Udyam Number,Category,Invoice No,Acceptance Date,Statutory Days,Deadline,Payment Date,Principal (INR),Status,Days Overdue,MSMED Interest (INR),43B(h) Disallowance\n';
+          for (const item of lineItems) {
+            const accDate = item.acceptance_date ? String(item.acceptance_date).trim().slice(0, 10) : '—';
+            const dline = item.computed_deadline ? String(item.computed_deadline).trim().slice(0, 10) : '—';
+            const pdate = item.payment_date && item.payment_date !== 'Unpaid' 
+              ? String(item.payment_date).trim().slice(0, 10) 
+              : 'Unpaid';
+            csv += `"${item.vendor_name}","${item.udyam_registration_number}","${item.udyam_category}","${item.invoice_number}","${accDate}",${item.statutory_window_days},"${dline}","${pdate}",${item.principal_amount},"${item.status}",${item.days_overdue},${item.accrued_msmed_interest},${item.section_43bh_disallowance_inr}\n`;
+          }
+          const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+          const url = window.URL.createObjectURL(blob);
+          const link = document.createElement('a');
+          link.href = url;
+          const dateStr = new Date().toISOString().split('T')[0];
+          link.setAttribute('download', `form_3cd_clause_22_${dateStr}.csv`);
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          window.URL.revokeObjectURL(url);
+          addToast({
+            title: 'Export Successful',
+            message: 'Form 3CD Clause 22 audit schedule exported to CSV.',
+            type: 'success'
+          });
+          return;
+        } catch (clientErr) {
+          console.error(clientErr);
+        }
+      }
       addToast({
         title: 'Export Failed',
         message: err.response?.data?.message || err.message || 'Failed to download Form 3CD CSV.',
@@ -99,6 +144,14 @@ export default function Form3CDPage() {
         </div>
 
         <div className="flex items-center gap-2.5">
+          <button
+            onClick={handleRefresh}
+            disabled={refreshing}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded text-xs font-medium bg-[#141E34] hover:bg-[#1E3A5F] text-slate-200 border border-[#263B5D] transition-colors disabled:opacity-50"
+          >
+            <RefreshCw className={`w-3.5 h-3.5 text-slate-400 ${refreshing ? 'animate-spin' : ''}`} />
+            <span>Refresh</span>
+          </button>
           <button
             onClick={handlePrint}
             className="flex items-center gap-1.5 px-3.5 py-1.5 rounded text-xs font-medium bg-[#141E34] hover:bg-[#1E3A5F] text-slate-200 border border-[#263B5D] transition-colors"
