@@ -1,10 +1,105 @@
-# Nudge: AI-Powered Section 43B(h) MSME Payment Compliance Copilot
+# Nudge: AI-Powered MSME Payment Compliance Engine & Copilot
 
-**Nudge** is an enterprise-grade, multi-tenant compliance web application built for Indian SME and mid-market finance teams. It continuously monitors vendor payables under **Section 43B(h) of the Income Tax Act, 1961** and the **Micro, Small and Medium Enterprises Development (MSMED) Act, 2006**, flagging exposure **before** statutory deadlines breach rather than at retrospective year-end audit time.
+> **Statutory Section 43B(h) & MSMED Compliance Without Portal Fatigue — Embedded Directly Into Your Existing ERPs, Inboxes, and Banking Rails.**
+
+**Nudge** is an enterprise-grade, multi-tenant compliance engine built for Indian SME, mid-market, and enterprise finance teams. It continuously monitors vendor payables under **Section 43B(h) of the Income Tax Act, 1961** and the **Micro, Small and Medium Enterprises Development (MSMED) Act, 2006**, eliminating tax disallowance exposure and non-deductible penal interest **before** statutory deadlines breach.
 
 ---
 
-## 1. Statutory Context & Legal Engine
+## The Problem: Why Standalone Compliance Portals Fail
+
+Most compliance tools fail because of **"Portal Fatigue"**:
+- **Double Data Entry**: Accountants and accounts payable (AP) teams already spend their days inside ERPs (Tally, Zoho Books, SAP, Busy). Forcing them to log into another standalone website, manually re-upload invoices, and re-type vendor details creates operational resistance and drops adoption to zero.
+- **Siloed Awareness**: When statutory deadlines are trapped on a third-party dashboard, finance teams only discover overdue MSME bills at the end of the fiscal year—long after Section 43B(h) tax deductions have lapsed and 3x RBI penal interest has compounded.
+- **Friction-Ridden Onboarding**: Vendors refuse to create yet another login or fill out complex supplier portals just to confirm their Udyam registration status.
+
+### The Nudge Philosophy: Zero-Friction Embedded Compliance
+Nudge is architected **not as an isolated portal where teams struggle**, but as an **embedded, headless compliance mesh** that weaves silently into the tools your finance department and vendors already use every day.
+
+```
+                           +-----------------------------------------------------------+
+                           |           INBOUND SOURCES (Zero Manual Upload)            |
+                           |  - AP Inbound Email Forwarding (invoices@company.com)     |
+                           |  - Bi-Directional ERP Connectors (Tally, Zoho, SAP, Busy) |
+                           |  - Cloud Storage Watchers (Google Drive, SharePoint, S3)  |
+                           |  - Headless REST APIs & Enterprise Webhook Ingestion      |
+                           +-----------------------------------------------------------+
+                                                         |
+                                                         v
+                                   +-------------------------------------------+
+                                   |       NUDGE CORE COMPLIANCE ENGINE        |
+                                   |                                           |
+                                   |  [Server-Side Gemini 3.8 Flash OCR]       |
+                                   |  - Auto-extracts Vendor, Udyam, & Dates   |
+                                   |  - Flags Supplier Classification (M/S/M)  |
+                                   |                                           |
+                                   |  [Deterministic Legal Math Engine]        |
+                                   |  - Sec 15 Deadlines (15d / 45d Hard Cap)  |
+                                   |  - Sec 16 Compound 3x Monthly Interest    |
+                                   |  - Sec 43B(h) Disallowance Exposure Calc  |
+                                   +-------------------------------------------+
+                                                         |
+                                                         v
+                           +-----------------------------------------------------------+
+                           |          OUTBOUND ACTIONS (Embedded Into Workflow)        |
+                           |  - Push Statutory Due Dates back to ERP Credit Terms      |
+                           |  - Actionable Slack / MS Teams / WhatsApp Alerts for CFOs |
+                           |  - Prioritized Bank CMS Payment Batch Files (HDFC, ICICI) |
+                           |  - 1-Click Form 3CD Clause 22 Tax Audit Disclosure Export |
+                           +-----------------------------------------------------------+
+```
+
+---
+
+## 1. Five Pillars of Enterprise Workflow Integration
+
+Nudge acts as a continuous background sidecar to your existing corporate finance stack:
+
+### Pillar 1: Inbound Headless Email Ingestion
+- **No Website Upload Required**: Your vendors continue emailing PDF invoices to your standard AP inbox (e.g., `invoices@company.com`) or a dedicated forwarding alias (`ap@nudge.yourcompany.com`).
+- **Autonomous Gemini 3.8 Flash OCR**: Incoming attachments are parsed automatically in memory. Gemini extracts the vendor name, invoice date, delivery/acceptance date, payment terms, and scans for Udyam Registration Numbers (URN).
+- **Silent Registering**: Payables are matched against your vendor directory and staged with exact statutory due dates without requiring human data entry.
+
+### Pillar 2: Two-Way ERP Synchronization (Tally, Zoho Books, SAP, Busy)
+- **Continuous Ledger Pull**: Nudge connects with your accounting software to ingest purchase vouchers, bills, and vendor master data.
+- **Statutory Due Date Override**: If an ERP voucher contains payment terms exceeding legal caps (e.g., a 60-day credit agreement with a Micro enterprise), Nudge recalculates the legal deadline under Section 15 (strictly capped at 45 calendar days) and **syncs the corrected statutory due date directly back into the ERP bill**.
+- **Payment Run Protection**: Standard ERP payment runs automatically honor statutory dates, preventing accidental defaults.
+
+### Pillar 3: Omnichannel Escalations (Slack, Teams, WhatsApp & Email)
+- **No Daily Portal Logins**: Finance managers and department heads receive timely, contextual notifications where they already communicate:
+  - **Slack / Microsoft Teams**: Real-time alerts in `#finance-ap` when an invoice enters the 7-day or 3-day risk threshold, complete with quick-action links.
+  - **WhatsApp Business Escalation**: High-priority notifications dispatched to promoters and CFOs 48 hours before an invoice breaches the Section 43B(h) tax disallowance window.
+  - **Vendor Verification Loops**: Automated, polite email workflows requesting Udyam certificates from unverified vendors with 1-click self-declaration.
+
+### Pillar 4: Banking Rails & Cash Management (CMS) Priority Export
+- **Disbursement Prioritization**: When treasury prepares weekly payout batches, Nudge generates pre-sorted bank payment files formatted for major Indian Cash Management Systems (**HDFC CMS, ICICI Bulk Pay, Kotak CMS, Axis & SBI Corporate**).
+- **Legal Urgency Sorting**: Payables with imminent Section 15 deadlines are placed at the top of the batch, ensuring critical MSME deductions are locked in before arbitrary vendor dues.
+
+### Pillar 5: Developer-Ready REST API & Webhooks
+- **Custom Architecture Support**: Enterprises with proprietary ERPs or microservices can leverage standard RESTful endpoints authenticated via tenant API keys.
+- **Event-Driven Webhook Bus**: Subscribe to real-time events:
+  - `invoice.extracted`: Triggered when an invoice finishes AI extraction.
+  - `compliance.at_risk`: Triggered when an invoice reaches the alert lead time threshold.
+  - `compliance.breached`: Triggered when an invoice crosses its statutory deadline, calculating active penal interest.
+  - `vendor.udyam_verified`: Triggered when a vendor's MSME classification is validated.
+
+---
+
+## 2. Dual Operation Modes: Headless Engine vs. Copilot Portal
+
+Nudge provides two complementary operational modes:
+
+| Capability | Headless Integration Mode (Invisible Engine) | Copilot Web Portal (Control Center) |
+|---|---|---|
+| **Primary Users** | Accounts Payable Clerks, Procurement, Vendors | CFOs, Finance Directors, Statutory Tax Auditors |
+| **User Interface** | Inbound Email, ERP bills, Slack/WhatsApp alerts | React 18 + Tailwind executive dashboard |
+| **Day-to-Day Action** | Invoices auto-ingested; ERP due dates updated automatically | High-level risk ageing, working capital impact charts |
+| **Audit & Governance**| Headless logging of all computations | Form 3CD Clause 22 report export, immutable audit logs |
+| **Natural Language AI**| Webhook dispatch of AI summaries | `/assistant` interactive copilot over multi-tenant data |
+
+---
+
+## 3. Statutory Context & Legal Engine
 
 ### A. Section 43B(h) of the Income Tax Act, 1961
 Enacted via Finance Act 2023, Section 43B(h) mandates that any sum payable by an assessee to a registered **Micro or Small Enterprise** beyond the statutory time limit specified in Section 15 of the MSMED Act, 2006 shall be allowed as a tax deduction **only in the previous year in which such sum is actually paid**.
@@ -21,7 +116,7 @@ Enacted via Finance Act 2023, Section 43B(h) mandates that any sum payable by an
 
 ---
 
-## 2. Core Architecture & Strict AI Boundary
+## 4. Architecture & Strict AI Boundary
 
 ```
                      +---------------------------------------+
@@ -38,12 +133,11 @@ Enacted via Finance Act 2023, Section 43B(h) mandates that any sum payable by an
            (Server-Side Only)    /              \   (User JWT Context)
                                 v                v
      +------------------------------+     +-------------------------------+
-     |   Google Gemini (Flash)      |     |  Supabase PostgreSQL & Auth   |
+     |   Google Gemini 3.8 Flash    |     |  Supabase PostgreSQL & Auth   |
      | - Document OCR Extraction    |     | - Row Level Security (RLS)    |
      | - Udyam Classification       |     | - Tenant-Isolated DB Tables   |
      | - Declaration Email Drafting |     | - Private Storage Bucket      |
-     | - Inbound Reply Parsing      |     +-------------------------------+
-     | - Natural-Language Assistant |                    |
+     | - Natural-Language Assistant |     +-------------------------------+
      +------------------------------+                    |
                                                          v
                                           +-------------------------------+
@@ -55,11 +149,11 @@ Enacted via Finance Act 2023, Section 43B(h) mandates that any sum payable by an
 ```
 
 > [!IMPORTANT]
-> **Deterministic Math Guarantee**: Deadlines and interest figures are **never** calculated or stated by the LLM. Those legal calculations are performed deterministically in backend business logic (`server/src/services/compliance.service.js`) and verified against statutory test cases. The AI's role is restricted to document extraction, classification, and drafting.
+> **Deterministic Math Guarantee**: Deadlines and interest figures are **never** calculated or stated by the LLM. Those legal calculations are performed deterministically in backend business logic (`server/src/services/compliance.service.js`) and verified against statutory test cases. The AI's role is strictly restricted to document extraction, classification, and drafting.
 
 ---
 
-## 3. Technology Stack
+## 5. Technology Stack
 
 - **Frontend**: React.js (Vite), React Router v6, Tailwind CSS, Lucide Icons, Axios.
 - **Backend**: Node.js v24 (ES Modules), Express.js, Helmet, Express-Rate-Limit, Multer, Nodemailer.
@@ -69,7 +163,7 @@ Enacted via Finance Act 2023, Section 43B(h) mandates that any sum payable by an
 
 ---
 
-## 4. Application Routes & Navigation
+## 6. Application Routes & Navigation
 
 | Route | Description |
 |---|---|
@@ -89,7 +183,7 @@ Enacted via Finance Act 2023, Section 43B(h) mandates that any sum payable by an
 
 ---
 
-## 5. Getting Started (Setup & Execution)
+## 7. Getting Started (Setup & Execution)
 
 ### Step 1: Database Setup (Supabase)
 1. In your Supabase PostgreSQL project, execute the SQL migration script:
@@ -117,7 +211,7 @@ Access the client dashboard at `http://localhost:5173`.
 
 ---
 
-## 6. Automated Test Suites
+## 8. Automated Test Suites
 
 Nudge includes automated unit tests covering statutory deadlines, compound interest math, schema validation, and security invariants:
 
@@ -140,11 +234,11 @@ npm test
 3. **Security & Boundaries**:
    - Prompt-injection defense: Wrapping untrusted content in `<untrusted_content>` tags and stripping closing delimiters.
    - Unauthenticated 401 rejections across all protected API routes.
-   - Signed secret header verification on scheduled background scanner and inbound email webhook.
+   - Signed secret header verification on scheduled background scanner (`/api/jobs/scan-deadlines`).
 
 ---
 
-## 7. Security Hardening Checklist
+## 9. Security Hardening Checklist
 
 - [x] **Row Level Security (RLS)**: Enforced on all tables with `is_org_member(org_id)`.
 - [x] **Zero Frontend Secrets**: Gemini API keys and Supabase service role keys reside server-side only.
