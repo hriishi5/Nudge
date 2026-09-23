@@ -53,11 +53,13 @@ app.use(cors({
     const normalized = origin.trim().replace(/\/+$/, '');
     const isLocalhost = /^http:\/\/(localhost|127\.0\.0\.1|0\.0\.0\.0)(:\d+)?$/.test(normalized);
     const isRenderDomain = normalized.endsWith('.onrender.com');
+    const isVercelDomain = normalized.endsWith('.vercel.app');
     const isWildcard = process.env.CORS_ORIGIN === '*';
 
     if (
       isLocalhost ||
       isRenderDomain ||
+      isVercelDomain ||
       isWildcard ||
       allowedOrigins.includes(normalized) ||
       process.env.NODE_ENV !== 'production'
