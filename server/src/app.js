@@ -99,6 +99,7 @@ app.use('/api/alerts', alertRoutes);
 app.use('/api/jobs', jobRoutes);
 app.use('/api/assistant', assistantRoutes);
 app.use('/api/reports', reportRoutes);
+app.use('/reports', reportRoutes); // Alias for requests without /api prefix
 app.use('/api/settings', settingsRoutes);
 app.use('/api/audit-log', auditRoutes);
 

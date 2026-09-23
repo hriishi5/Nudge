@@ -37,11 +37,38 @@ export default function Form3CDPage() {
     fetchReport();
   }, []);
 
-  const handleDownloadCSV = () => {
-    const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
-    const token = localStorage.getItem('nudge_auth_token');
-    // Trigger download via link
-    window.open(`${apiBaseUrl}/reports/form-3cd?format=csv`, '_blank');
+  const [exporting, setExporting] = useState(false);
+
+  const handleDownloadCSV = async () => {
+    setExporting(true);
+    try {
+      const res = await apiClient.get('/reports/form-3cd?format=csv', {
+        responseType: 'blob'
+      });
+      const blob = new Blob([res.data], { type: 'text/csv;charset=utf-8;' });
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      const dateStr = new Date().toISOString().split('T')[0];
+      link.setAttribute('download', `form_3cd_clause_22_${dateStr}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+      addToast({
+        title: 'Export Successful',
+        message: 'Form 3CD Clause 22 audit schedule exported to CSV.',
+        type: 'success'
+      });
+    } catch (err) {
+      addToast({
+        title: 'Export Failed',
+        message: err.response?.data?.message || err.message || 'Failed to download Form 3CD CSV.',
+        type: 'error'
+      });
+    } finally {
+      setExporting(false);
+    }
   };
 
   const handlePrint = () => {
@@ -81,10 +108,11 @@ export default function Form3CDPage() {
           </button>
           <button
             onClick={handleDownloadCSV}
-            className="flex items-center gap-1.5 px-3.5 py-1.5 rounded text-xs font-medium bg-[#1E3A5F] hover:bg-[#2A4D7D] text-white border border-[#263B5D] transition-colors"
+            disabled={exporting}
+            className="flex items-center gap-1.5 px-3.5 py-1.5 rounded text-xs font-medium bg-[#1E3A5F] hover:bg-[#2A4D7D] text-white border border-[#263B5D] transition-colors disabled:opacity-50"
           >
-            <Download className="w-3.5 h-3.5" />
-            <span>Export CSV</span>
+            <Download className={`w-3.5 h-3.5 ${exporting ? 'animate-bounce' : ''}`} />
+            <span>{exporting ? 'Exporting...' : 'Export CSV'}</span>
           </button>
         </div>
       </div>

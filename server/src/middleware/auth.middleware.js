@@ -8,15 +8,22 @@ import { createUserSupabaseClient, supabaseAnon, createAdminSupabaseClient } fro
 
 export async function requireAuth(req, res, next) {
   try {
+    let token = null;
     const authHeader = req.headers.authorization;
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+      token = authHeader.split(' ')[1];
+    } else if (req.query?.token) {
+      token = req.query.token;
+    } else if (req.query?.auth_token) {
+      token = req.query.auth_token;
+    }
+
+    if (!token) {
       return res.status(401).json({
         error: 'Unauthorized',
         message: 'Missing or malformed Authorization header. Expected Bearer token.'
       });
     }
-
-    const token = authHeader.split(' ')[1];
 
     // Development/Local mock fallback bypass for testing if Supabase cloud is not configured
     if (token.startsWith('mock_jwt_')) {
