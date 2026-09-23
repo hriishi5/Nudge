@@ -1,9 +1,9 @@
 # Nudge: AI-Powered MSME Payment Compliance Copilot
 
-> **Current Status**: Working MVP / Functional Prototype  
-> **Core Purpose**: Continuous compliance monitoring under **Section 43B(h) of the Income Tax Act, 1961** and the **MSMED Act, 2006**, eliminating tax disallowances and penal interest before statutory deadlines breach.
+**Nudge** is an enterprise-grade, multi-tenant compliance web application built for Indian SME and mid-market finance teams. It continuously monitors vendor payables under **Section 43B(h) of the Income Tax Act, 1961** and the **Micro, Small and Medium Enterprises Development (MSMED) Act, 2006**, flagging exposure **before** statutory deadlines breach rather than at retrospective year-end audit time.
 
----
+> **Current Status**: Working MVP / Functional Prototype  
+
 
 ## 1. Project Overview & Current MVP
 
