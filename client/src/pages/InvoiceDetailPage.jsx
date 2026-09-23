@@ -7,6 +7,7 @@ import UdyamBadge from '../components/UdyamBadge.jsx';
 import RecordPaymentModal from '../components/RecordPaymentModal.jsx';
 import ConfirmDialog from '../components/ConfirmDialog.jsx';
 import { formatINR, formatDate } from '../lib/formatters.js';
+import { calculateMSMEDInterest } from '../services/compliance.service.js';
 import {
   ArrowLeft,
   ShieldCheck,
@@ -145,9 +146,22 @@ export default function InvoiceDetailPage() {
     );
   }
 
-  const interest = invoice.interest_calculations?.[0];
   const isBreached = invoice.live_status === 'breached';
   const isPaidLate = invoice.live_status === 'paid_late';
+
+  // Compute live deterministic interest if missing or 0 for breached/late invoices
+  let interest = invoice.interest_calculations?.[0];
+  if ((isBreached || isPaidLate) && (!interest || Number(interest.interest_amount || 0) === 0) && invoice.computed_deadline) {
+    const liveCalc = calculateMSMEDInterest({
+      principal_amount: invoice.amount,
+      computed_deadline: invoice.computed_deadline,
+      payment_date: invoice.payment_date,
+      rbi_bank_rate: interest?.rbi_bank_rate || 6.50
+    });
+    if (liveCalc.days_overdue > 0) {
+      interest = liveCalc;
+    }
+  }
 
   return (
     <div className="max-w-5xl mx-auto space-y-6">

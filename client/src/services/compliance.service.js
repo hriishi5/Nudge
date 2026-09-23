@@ -67,3 +67,65 @@ export function computeStatutoryDeadline({ acceptance_date, agreement_basis, agr
     applicable_window_days
   };
 }
+
+/**
+ * Section 16 MSMED Act 2006: Compound Interest Calculation with Monthly Rests
+ * Rate: Exactly three times (3x) the notified RBI bank rate.
+ */
+export function calculateMSMEDInterest({
+  principal_amount,
+  computed_deadline,
+  payment_date = null,
+  as_of_date = formatDateUTC(new Date()),
+  rbi_bank_rate = 6.50
+}) {
+  const principal = Number(principal_amount);
+  if (isNaN(principal) || principal <= 0) {
+    return {
+      applicable_rate: Number((rbi_bank_rate * 3).toFixed(2)),
+      days_overdue: 0,
+      interest_amount: 0,
+      total_amount_payable: 0
+    };
+  }
+
+  const effectiveEnd = payment_date || as_of_date;
+  const days_overdue = Math.max(0, differenceInDays(computed_deadline, effectiveEnd));
+
+  const baseRate = Number(rbi_bank_rate);
+  const applicable_rate = Number((baseRate * 3).toFixed(2)); // 3x RBI bank rate
+
+  if (days_overdue <= 0) {
+    return {
+      applicable_rate,
+      days_overdue: 0,
+      interest_amount: 0,
+      total_amount_payable: principal
+    };
+  }
+
+  const annualRateDecimal = applicable_rate / 100;
+  const monthlyRate = annualRateDecimal / 12;
+
+  // Monthly rests calculation (standard 30-day monthly intervals)
+  const fullMonths = Math.floor(days_overdue / 30);
+  const remainingDays = days_overdue % 30;
+
+  // Compounding through full months
+  const compoundedAfterMonths = principal * Math.pow(1 + monthlyRate, fullMonths);
+
+  // Pro-rata simple interest on compounded balance for remaining days
+  const dailyRate = annualRateDecimal / 365;
+  const finalAmount = compoundedAfterMonths * (1 + (dailyRate * remainingDays));
+
+  const interest_amount = Number((finalAmount - principal).toFixed(2));
+  const total_amount_payable = Number((principal + interest_amount).toFixed(2));
+
+  return {
+    rbi_bank_rate: baseRate,
+    applicable_rate,
+    days_overdue,
+    interest_amount,
+    total_amount_payable
+  };
+}

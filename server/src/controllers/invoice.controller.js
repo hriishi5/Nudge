@@ -43,6 +43,14 @@ export async function listInvoices(req, res) {
       return res.status(500).json({ error: 'Database Query Failed', message: error.message });
     }
 
+    // Fetch org settings for RBI bank rate
+    const { data: orgSettings } = await req.supabase
+      .from('org_settings')
+      .select('rbi_bank_rate')
+      .eq('org_id', req.org_id)
+      .maybeSingle();
+    const rbiRate = Number(orgSettings?.rbi_bank_rate || 6.50);
+
     // Refresh dynamic status based on today's evaluation
     const today = formatDateUTC(new Date());
     const enriched = (invoices || []).map(inv => {
@@ -51,8 +59,33 @@ export async function listInvoices(req, res) {
         payment_date: inv.payment_date,
         as_of_date: today
       });
+
+      let interestCalcs = inv.interest_calculations || [];
+      if (
+        (evalResult.status === 'breached' || evalResult.status === 'paid_late') &&
+        (!interestCalcs.length || Number(interestCalcs[0]?.interest_amount || 0) === 0) &&
+        inv.computed_deadline
+      ) {
+        const liveInt = calculateMSMEDInterest({
+          principal_amount: inv.amount,
+          computed_deadline: inv.computed_deadline,
+          payment_date: inv.payment_date,
+          as_of_date: today,
+          rbi_bank_rate: rbiRate
+        });
+        interestCalcs = [{
+          invoice_id: inv.id,
+          rbi_bank_rate: rbiRate,
+          applicable_rate: liveInt.applicable_rate,
+          days_overdue: liveInt.days_overdue,
+          interest_amount: liveInt.interest_amount,
+          calculated_at: new Date().toISOString()
+        }];
+      }
+
       return {
         ...inv,
+        interest_calculations: interestCalcs,
         live_status: evalResult.status,
         days_to_breach: evalResult.days_to_breach,
         is_breached: evalResult.is_breached
@@ -248,6 +281,28 @@ export async function uploadInvoice(req, res) {
       });
     }
 
+    // If invoice is already breached upon upload, record Section 16 penal interest
+    if (initialStatus === 'breached') {
+      const liveInt = calculateMSMEDInterest({
+        principal_amount: invoice.amount,
+        computed_deadline: invoice.computed_deadline,
+        payment_date: null,
+        as_of_date: formatDateUTC(new Date()),
+        rbi_bank_rate: rbiBankRate
+      });
+      await req.supabase
+        .from('interest_calculations')
+        .insert({
+          invoice_id: invoice.id,
+          org_id: req.org_id,
+          rbi_bank_rate: rbiBankRate,
+          applicable_rate: liveInt.applicable_rate,
+          days_overdue: liveInt.days_overdue,
+          interest_amount: liveInt.interest_amount,
+          calculated_at: new Date().toISOString()
+        });
+    }
+
     // Step 8: Log Audit Trail for AI Extraction and Statutory Computation
     await logAuditEvent({
       supabase: req.supabase,
@@ -365,9 +420,41 @@ export async function getInvoice(req, res) {
       as_of_date: today
     });
 
+    let interestCalcs = invoice.interest_calculations || [];
+    if (
+      (evalResult.status === 'breached' || evalResult.status === 'paid_late') &&
+      (!interestCalcs.length || Number(interestCalcs[0]?.interest_amount || 0) === 0) &&
+      invoice.computed_deadline
+    ) {
+      const { data: orgSettings } = await req.supabase
+        .from('org_settings')
+        .select('rbi_bank_rate')
+        .eq('org_id', req.org_id)
+        .maybeSingle();
+      const rbiRate = Number(orgSettings?.rbi_bank_rate || 6.50);
+
+      const liveInt = calculateMSMEDInterest({
+        principal_amount: invoice.amount,
+        computed_deadline: invoice.computed_deadline,
+        payment_date: invoice.payment_date,
+        as_of_date: today,
+        rbi_bank_rate: rbiRate
+      });
+
+      interestCalcs = [{
+        invoice_id: invoice.id,
+        rbi_bank_rate: rbiRate,
+        applicable_rate: liveInt.applicable_rate,
+        days_overdue: liveInt.days_overdue,
+        interest_amount: liveInt.interest_amount,
+        calculated_at: new Date().toISOString()
+      }];
+    }
+
     return res.json({
       invoice: {
         ...invoice,
+        interest_calculations: interestCalcs,
         signed_file_url: signedUrl,
         live_status: evalResult.status,
         days_to_breach: evalResult.days_to_breach,

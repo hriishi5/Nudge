@@ -4,12 +4,20 @@
 // under the Income Tax Act, 1961 and Section 22 of the MSMED Act, 2006.
 // ====================================================================
 
-import { formatDateUTC, evaluateComplianceStatus, isSection43BhApplicable, computeStatutoryDeadline } from '../services/compliance.service.js';
+import { formatDateUTC, evaluateComplianceStatus, isSection43BhApplicable, computeStatutoryDeadline, calculateMSMEDInterest } from '../services/compliance.service.js';
 
 export async function getForm3CDReport(req, res) {
   try {
     const { year, format } = req.query;
     const today = formatDateUTC(new Date());
+
+    // Fetch org settings for RBI bank rate
+    const { data: orgSettings } = await req.supabase
+      .from('org_settings')
+      .select('rbi_bank_rate')
+      .eq('org_id', req.org_id)
+      .maybeSingle();
+    const rbiRate = Number(orgSettings?.rbi_bank_rate || 6.50);
 
     // Fetch all invoices for MSME vendors (Micro and Small)
     const { data: invoices, error } = await req.supabase
@@ -66,12 +74,25 @@ export async function getForm3CDReport(req, res) {
       });
 
       const principal = Number(inv.amount) || 0;
-      const interestObj = inv.interest_calculations?.[0] || null;
-      const interestAmount = interestObj ? Number(interestObj.interest_amount) : 0;
-      const daysOverdue = interestObj ? interestObj.days_overdue : 0;
-
       const isBreached = evalRes.status === 'breached';
       const isPaidLate = evalRes.status === 'paid_late';
+
+      const interestObj = inv.interest_calculations?.[0] || null;
+      let interestAmount = interestObj ? Number(interestObj.interest_amount) : 0;
+      let daysOverdue = interestObj ? interestObj.days_overdue : 0;
+
+      // Compute live Section 16 interest if invoice is breached or paid late and interest is 0
+      if ((isBreached || isPaidLate) && interestAmount === 0 && deadline) {
+        const liveInt = calculateMSMEDInterest({
+          principal_amount: principal,
+          computed_deadline: deadline,
+          payment_date: rawPayment,
+          as_of_date: today,
+          rbi_bank_rate: rbiRate
+        });
+        interestAmount = liveInt.interest_amount;
+        daysOverdue = liveInt.days_overdue;
+      }
 
       if (!rawPayment) {
         clause22_a_principal_unpaid += principal;
