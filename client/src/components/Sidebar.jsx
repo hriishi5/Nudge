@@ -75,17 +75,6 @@ export default function Sidebar({ activeAlertCount = 0 }) {
         })}
       </nav>
 
-      {/* Statutory Footer Citation */}
-      <div className="p-3 border-t border-[#263B5D] m-2.5 rounded bg-[#141E34] border border-[#263B5D]">
-        <div className="flex items-center gap-1.5 mb-1 text-[11px] font-medium text-slate-300">
-          <span className="w-1.5 h-1.5 rounded-full bg-[#15803D]"></span>
-          <span>MSMED Act 2006</span>
-        </div>
-        <p className="text-[10px] text-slate-400 leading-tight">
-          Sec 15: 15/45-day statutory cap<br/>
-          Sec 16: 3x RBI monthly compound
-        </p>
-      </div>
     </aside>
   );
 }

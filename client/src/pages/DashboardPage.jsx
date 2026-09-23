@@ -125,9 +125,6 @@ export default function DashboardPage() {
           <h1 className="text-xl font-bold tracking-tight text-white">
             MSME statutory compliance register
           </h1>
-          <p className="text-xs text-slate-400 mt-0.5">
-            Section 43B(h) Income Tax Act & Section 15/16 MSMED statutory payment monitor
-          </p>
         </div>
 
         <div className="flex items-center gap-2">
@@ -166,9 +163,6 @@ export default function DashboardPage() {
             <h2 className="text-sm font-semibold text-white">
               Statutory payables ageing register
             </h2>
-            <p className="text-xs text-slate-400 mt-0.5">
-              Continuous monitoring of Section 15 payment windows (15-day default, 45-day contractual limit)
-            </p>
           </div>
 
           {/* Inline Ageing Summary Pills */}

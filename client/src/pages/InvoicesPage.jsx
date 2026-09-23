@@ -119,9 +119,6 @@ export default function InvoicesPage() {
           <h1 className="text-xl font-bold tracking-tight text-white">
             MSME invoice register
           </h1>
-          <p className="text-xs text-slate-400 mt-0.5">
-            Deterministic Section 15 payment deadlines and MSMED Section 16 penal interest tracker
-          </p>
         </div>
 
         <Link

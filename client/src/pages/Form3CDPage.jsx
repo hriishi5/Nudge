@@ -69,9 +69,6 @@ export default function Form3CDPage() {
             <FileCheck2 className="w-5 h-5 text-[#8BA2C4]" />
             Tax audit Form 3CD — Clause 22 disclosures
           </h2>
-          <p className="text-xs text-slate-400 mt-1">
-            Statutory MSMED Act Section 22 disclosures and Section 43B(h) income tax disallowance schedule
-          </p>
         </div>
 
         <div className="flex items-center gap-2.5">

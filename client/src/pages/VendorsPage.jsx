@@ -110,9 +110,6 @@ export default function VendorsPage() {
           <h1 className="text-xl font-bold tracking-tight text-white">
             MSME vendor master & Udyam register
           </h1>
-          <p className="text-xs text-slate-400 mt-0.5">
-            Section 43B(h) applies exclusively to Micro and Small enterprise suppliers
-          </p>
         </div>
 
         <button
