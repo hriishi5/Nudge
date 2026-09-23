@@ -270,16 +270,16 @@ export default function Form3CDPage() {
           <table className="w-full text-left text-xs border-collapse">
             <thead className="bg-[#0F1729] text-[11px] text-slate-400 border-b border-[#263B5D]">
               <tr>
-                <th className="py-2.5 px-3 font-medium">Supplier name</th>
-                <th className="py-2.5 px-3 font-medium">Udyam number</th>
-                <th className="py-2.5 px-3 font-medium">Category</th>
-                <th className="py-2.5 px-3 font-medium">Invoice ref</th>
-                <th className="py-2.5 px-3 font-medium">Acceptance</th>
-                <th className="py-2.5 px-3 font-medium">Deadline</th>
-                <th className="py-2.5 px-3 font-medium">Status</th>
-                <th className="py-2.5 px-3 font-medium text-right">Principal (₹)</th>
-                <th className="py-2.5 px-3 font-medium text-right">Penal interest (₹)</th>
-                <th className="py-2.5 px-3 font-medium text-right">43B(h) disallowance</th>
+                <th className="py-2.5 px-3 font-medium whitespace-nowrap">Supplier name</th>
+                <th className="py-2.5 px-3 font-medium whitespace-nowrap">Udyam number</th>
+                <th className="py-2.5 px-3 font-medium whitespace-nowrap">Category</th>
+                <th className="py-2.5 px-3 font-medium whitespace-nowrap">Invoice ref</th>
+                <th className="py-2.5 px-3 font-medium whitespace-nowrap">Acceptance</th>
+                <th className="py-2.5 px-3 font-medium whitespace-nowrap">Deadline</th>
+                <th className="py-2.5 px-3 font-medium whitespace-nowrap">Status</th>
+                <th className="py-2.5 px-3 font-medium text-right whitespace-nowrap">Principal (₹)</th>
+                <th className="py-2.5 px-3 font-medium text-right whitespace-nowrap">Penal interest (₹)</th>
+                <th className="py-2.5 px-3 font-medium text-right whitespace-nowrap">43B(h) disallowance</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-[#263B5D] font-normal">
@@ -287,14 +287,14 @@ export default function Form3CDPage() {
                 const isBreached = item.status === 'breached';
                 return (
                   <tr key={item.id} className="hover:bg-[#1E3A5F]/20 transition-colors">
-                    <td className="py-2.5 px-3 text-slate-100 font-medium">{item.vendor_name}</td>
-                    <td className="py-2.5 px-3 font-serif tabular-nums text-slate-400 text-[11px]">{item.udyam_registration_number}</td>
-                    <td className="py-2.5 px-3 capitalize text-slate-300">{item.udyam_category}</td>
-                    <td className="py-2.5 px-3 font-serif tabular-nums text-slate-200">{item.invoice_number}</td>
-                    <td className="py-2.5 px-3 font-serif tabular-nums text-slate-400">{formatDate(item.acceptance_date)}</td>
-                    <td className="py-2.5 px-3 font-serif tabular-nums text-slate-200">{formatDate(item.computed_deadline)}</td>
-                    <td className="py-2.5 px-3">
-                      <span className={`px-2 py-0.5 rounded text-[10px] font-medium border ${
+                    <td className="py-2.5 px-3 text-slate-100 font-medium whitespace-nowrap">{item.vendor_name}</td>
+                    <td className="py-2.5 px-3 font-serif tabular-nums text-slate-400 text-[11px] whitespace-nowrap">{item.udyam_registration_number}</td>
+                    <td className="py-2.5 px-3 capitalize text-slate-300 whitespace-nowrap">{item.udyam_category}</td>
+                    <td className="py-2.5 px-3 font-serif tabular-nums text-slate-200 whitespace-nowrap">{item.invoice_number}</td>
+                    <td className="py-2.5 px-3 font-serif tabular-nums text-slate-400 whitespace-nowrap">{formatDate(item.acceptance_date)}</td>
+                    <td className="py-2.5 px-3 font-serif tabular-nums text-slate-200 whitespace-nowrap">{formatDate(item.computed_deadline)}</td>
+                    <td className="py-2.5 px-3 whitespace-nowrap">
+                      <span className={`inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium border whitespace-nowrap shrink-0 ${
                         isBreached
                           ? 'bg-[#7F1D1D]/20 text-[#FCA5A5] border-[#7F1D1D]'
                           : 'bg-[#15803D]/20 text-[#86EFAC] border-[#15803D]'
@@ -302,9 +302,9 @@ export default function Form3CDPage() {
                         {isBreached ? 'Breached' : 'Within limit'}
                       </span>
                     </td>
-                    <td className="py-2.5 px-3 text-right font-serif tabular-nums text-slate-100">{formatINR(item.principal_amount)}</td>
-                    <td className="py-2.5 px-3 text-right font-serif tabular-nums text-[#FCD34D]">{formatINR(item.accrued_msmed_interest)}</td>
-                    <td className="py-2.5 px-3 text-right font-serif tabular-nums font-semibold text-[#FCA5A5]">
+                    <td className="py-2.5 px-3 text-right font-serif tabular-nums text-slate-100 whitespace-nowrap">{formatINR(item.principal_amount)}</td>
+                    <td className="py-2.5 px-3 text-right font-serif tabular-nums text-[#FCD34D] whitespace-nowrap">{formatINR(item.accrued_msmed_interest)}</td>
+                    <td className="py-2.5 px-3 text-right font-serif tabular-nums font-semibold text-[#FCA5A5] whitespace-nowrap">
                       {formatINR(item.section_43bh_disallowance_inr)}
                     </td>
                   </tr>
